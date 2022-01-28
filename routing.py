@@ -74,25 +74,25 @@ class Route:
 
 if __name__ == '__main__':
 
-    maze = np.array([[0, 1, 1, 1, 1, 1],
+    map = np.array([[0, 1, 1, 1, 1, 1],
                      [0, 0, 0, 0, 0, 0],
                      [0, 1, 1, 1, 0, 0],
                      [0, 1, 0, 1, 1, 0],
                      [0, 1, 0, 1, 1, 0]])
 
-    new_maze = np.full(np.shape(maze), -1)
+    new_map = np.full(np.shape(map), -1)
 
     start = Point(0, 0)  # starting position
     end = Point(5, 4)  # ending position
 
-    came_from, cost_so_far = Route.search(maze, start, end)
+    came_from, cost_so_far = Route.search(map, start, end)
     for point, cost in cost_so_far.items():
-        new_maze[point.y][point.x] = cost
+        new_map[point.y][point.x] = cost
 
-    print(new_maze)
+    print(new_map)
     last_point = end
     print(last_point)
-    
+
     while last_point is not None:
         last_point = came_from[last_point]
         print(last_point)
