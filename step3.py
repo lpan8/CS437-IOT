@@ -42,9 +42,6 @@ def detect_wall():
                 else:
                     fc.turn_left(100)
             fc.forward(50)
-            time.sleep(1)
-            fc.stop()
-            break
 
 def main():
     try:
