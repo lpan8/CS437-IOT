@@ -5,6 +5,7 @@ import numpy as np
 
 T = TypeVar('T')
 
+temp_var = np.array([10])
 class PriorityQueue:
     def __init__(self):
         self.elements: List[Tuple[float, T]] = []
@@ -73,7 +74,6 @@ class Route:
 
 
 if __name__ == '__main__':
-
     map = np.array([[0, 1, 1, 1, 1, 1],
                      [0, 0, 0, 0, 0, 0],
                      [0, 1, 1, 1, 0, 0],
