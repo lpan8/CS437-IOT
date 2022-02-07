@@ -19,12 +19,12 @@ min_angle = -ANGLE_RANGE/2
 speed = 20
 
 
-#The maximum number of coordinate points for map. Change it accordingly to the requirement
+##The maximum number of coordinate points for map. Change it accordingly to the requirement
 MAP_ARRAY_MAX_X = 36
 MAP_ARRAY_MAX_Y = 36
 
 #Example: Car position is at (5,0) for (10,8) map as indicated below
-# 
+#
 
 #                0 0 0 0 0 0 0 0
 #                0 0 0 0 0 0 0 0
@@ -42,7 +42,7 @@ angle_dist_list  = np.zeros([int(ANGLE_RANGE/STEP+1),2],dtype=int)
 
 dist_between_points = np.zeros(int(ANGLE_RANGE/STEP),dtype=int)
 
-cart_map_temp = np.zeros_like(angle_dist_list)
+cart_map = np.zeros_like(angle_dist_list)
 map_x_y = np.zeros([MAP_ARRAY_MAX_X,MAP_ARRAY_MAX_Y],dtype=int)
 
 servo = Servo(PWM("P0"), offset=0)
@@ -64,9 +64,10 @@ def meas_dist_fill_dist_angle_bitmap(step_input):
     status =0
     dist_between_points.fill(0)
     map_x_y.fill(0)
-    cart_map_temp.fill(0)
+    cart_map.fill(0)
 
 
+   #Scan distances for various angles using ultrasonic
     for index in range(0,step_input+1) :
         dist = int(get_distance_at(current_angle))
         temp_angle = current_angle+90
@@ -81,29 +82,32 @@ def meas_dist_fill_dist_angle_bitmap(step_input):
         elif current_angle <= min_angle:
             current_angle = min_angle
             us_step = STEP
+
+    #Get the cartisian coordinates for each (angle,distance) point
     for k in range(angle_dist_list.shape[0]):
         if (angle_dist_list[k,1] != -2 ):
             cos_theta = np.cos(np.deg2rad(angle_dist_list[k,0]))
-            cart_map_temp[k,0] = angle_dist_list[k,1] * cos_theta
+            cart_map[k,0] = angle_dist_list[k,1] * cos_theta
 
             sin_theta = np.sin(np.deg2rad(angle_dist_list[k,0]))
-            cart_map_temp[k,1] = angle_dist_list[k,1] * sin_theta
+            cart_map[k,1] = angle_dist_list[k,1] * sin_theta
 
-    for k in range(cart_map_temp.shape[0]):
-        if ( k>0 and cart_map_temp[k-1,0] !=0 and cart_map_temp[k-1,1] !=0 and cart_map_temp[k,0] !=0 and cart_map_temp[k,1] != 0):
-            dist_between_points[k-1] = np.sqrt( ((cart_map_temp[k-1,0]-cart_map_temp[k,0])**2) + ((cart_map_temp[k-1,1]-cart_map_temp[k,1])**2) )
+    #Calc the distances between 2 adjacent points
+    for k in range(cart_map.shape[0]):
+        if ( k>0 and cart_map[k-1,0] !=0 and cart_map[k-1,1] !=0 and cart_map[k,0] !=0 and cart_map[k,1] != 0):
+            dist_between_points[k-1] = np.sqrt( ((cart_map[k-1,0]-cart_map[k,0])**2) + ((cart_map[k-1,1]-cart_map[k,1])**2) )
 
+    #Algo to fill up the map using each point in the cartisian position
+    # To improve: if 2 objects are apart, give the gap in the map based on the some threshold
     for j in range(dist_between_points.shape[0]):
-        x = np.zeros(20,dtype=int)
-        y = np.zeros(20,dtype=int)
         if dist_between_points[j] != 0 :
             for i in range(int(dist_between_points[j])):
-                x = (int)( cart_map_temp[j:j+1,0] ) + ( (i/dist_between_points[j]) * (cart_map_temp[j+1:j+2,0] - cart_map_temp[j:j+1,0]))
-                y = (int)( cart_map_temp[j:j+1,1] ) + ( (i/dist_between_points[j]) * (cart_map_temp[j+1:j+2,1] - cart_map_temp[j:j+1,1]))
-                yy = y[:].astype(int)
+                x = (int)( cart_map[j:j+1,0] ) + ( (i/dist_between_points[j]) * (cart_map[j+1:j+2,0] - cart_map[j:j+1,0]))
+                y = (int)( cart_map[j:j+1,1] ) + ( (i/dist_between_points[j]) * (cart_map[j+1:j+2,1] - cart_map[j:j+1,1]))
                 if (x < MAP_ARRAY_MAX_X/2 and y < MAP_ARRAY_MAX_Y):
                     x += MAP_ARRAY_MAX_X/2
-                    xx = x[:].astype(int)
+                    xx = x.astype(int)
+                    yy = y.astype(int)
                     map_x_y[xx,yy]=1
 
 
@@ -120,12 +124,9 @@ def meas_dist_fill_dist_angle_bitmap(step_input):
 def main():
     while True:
         map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
-        #print(map)
+        print(map)
         continue
 
 if __name__ == "__main__":
-    try:
         main()
-    finally:
-        fc.stop()
 
