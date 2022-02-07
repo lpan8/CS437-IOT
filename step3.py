@@ -11,8 +11,8 @@ print("testing...")
 def move25():
     speed = fc.Speed(25)
     speed.start()
-    fc.forward(50)
-    time.sleep(0.5)
+    fc.forward(100)
+    #time.sleep(0.5)
     x = 0
     for i in range(5):
         time.sleep(0.1)
@@ -45,8 +45,8 @@ def detect_wall():
 
 def main():
     try:
-        #move25()
-        detect_wall()
+        move25()
+        #detect_wall()
     finally:
         fc.stop()
 
