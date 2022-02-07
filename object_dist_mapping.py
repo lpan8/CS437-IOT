@@ -20,8 +20,8 @@ speed = 20
 
 
 ##The maximum number of coordinate points for map. Change it accordingly to the requirement
-MAP_ARRAY_MAX_X = 36
-MAP_ARRAY_MAX_Y = 36
+MAP_ARRAY_MAX_X = 100
+MAP_ARRAY_MAX_Y = 100
 
 #Example: Car position is at (5,0) for (10,8) map as indicated below
 #

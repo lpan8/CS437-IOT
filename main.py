@@ -82,6 +82,30 @@ def turn_90_left():
     for i in range(500):
         fc.turn_left(100)
 
+def get_path(map, start, end):
+    new_map = np.full(np.shape(map), -1)
+    came_from, cost_so_far = Route.search(map, start, end)
+    for point, cost in cost_so_far.items():
+        new_map[point.y][point.x] = cost
+
+    # for point in came_from:
+    #     point.print()
+
+    
+    path = []
+    last_point = end
+    print(last_point)
+    print(last_point in came_from)
+    path.append((last_point.x, last_point.y))
+    while last_point is not None:
+        print(last_point)
+        last_point = came_from[last_point]
+        if last_point is not None:
+            path.append((last_point.x, last_point.y))
+    path.reverse()
+    return path
+
+
 
 def main():
 
@@ -92,80 +116,89 @@ def main():
     #                  [0, 1, 0, 1, 1, 0]])
 
     
-    map = np.array([[0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+    # map = np.array([[0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
-    #map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
+    map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
     print(map)
-    new_map = np.full(np.shape(map), -1)
 
-    start = Point(0, 10)  # starting position
-    end = Point(19, 10)  # ending position
+    start = Point(50, 0)  # starting position
+    end = Point(50, 99)  # ending position
 
+    cur_pos = start
+    change_x = 0
+    change_y = 0
+    while not (cur_pos == end):
+        path = get_path(map, start, end)
+        print(path)
+        dir_dists = path_to_dists(path)
+        print(dir_dists)
+        car_direction = Direction.NORTH
 
-    # goal dest: 
+        for dist, dir in dir_dists:
 
-    came_from, cost_so_far = Route.search(map, start, end)
-    for point, cost in cost_so_far.items():
-        new_map[point.y][point.x] = cost
+            dir_diff = dir - car_direction
+            print(dir, car_direction, dir_diff)
+            if dir_diff % 4 == 3:
+                turn_90_left()
+                car_direction = dir 
+                print("turned left")
+                if car_direction == Direction.NORTH:
+                    # rescan
+                    print(map)
+                    map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
+                    print("facing north again")
+                    end = Point(end.x - change_x, end.y - change_y)
+                    cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
+                    change_x, change_y = 0, 0
+                    print("cur pos: ", cur_pos)
+                    print("new dest: ", end)
+                    continue
 
-    path = []
-
-    #print(new_map)
-    last_point = end
-    #print(last_point)
-
-    path.append((last_point.x, last_point.y))
-
-    #print(came_from)
-
-    while last_point is not None:
-        last_point = came_from[last_point]
-        if last_point is not None:
-            path.append((last_point.x, last_point.y))
-            #print(last_point)
-
-    path.reverse()
-
-    print(path)
-    dir_dists = path_to_dists(path)
-    print(dir_dists)
-    car_direction = Direction.NORTH
-
-    for dist, dir in dir_dists:
+            elif dir_diff % 4 == 1:
+                turn_90_right()
+                car_direction = dir
+                print("turned right")
+                if car_direction == Direction.NORTH:
+                    # rescan
+                    print("facing north again")
+                    end = Point(end.x - change_x, end.y - change_y)
+                    cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
+                    change_x, change_y = 0, 0
+                    print("cur pos: ", cur_pos)
+                    print("new dest: ", end)
+                    continue
+            if dir == Direction.NORTH:
+                change_x += dist
+            elif dir == Direction.EAST:
+                change_y += dist
+            elif dir == Direction.SOUTH:
+                change_x -= dist
+            elif dir == Direction.WEST:
+                change_y -= dist
+            print(change_x, change_y)
+            dist_to_time(dist)
+    
         
-        dir_diff = dir - car_direction
-        print(dir, car_direction, dir_diff)
-        if dir_diff % 4 == 3:
-            turn_90_left()
-            car_direction = dir 
-            print("turned left")
-        elif dir_diff % 4 == 1:
-            turn_90_right()
-            car_direction = dir
-            print("turned right")
-        dist_to_time(dist)
-        
-
-
+    
 if __name__ == '__main__':
     try:
         main()

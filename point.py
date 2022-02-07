@@ -25,3 +25,6 @@ class Point:
 
     def __hash__(self):
         return hash((self.x, self.y))
+
+    def print(self):
+        print("(", self.x, ", ", self.y, ")")
