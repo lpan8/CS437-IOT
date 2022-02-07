@@ -10,9 +10,12 @@ import sys
 import time
 from routing import Route
 import enum
+from object_dist_mapping import meas_dist_fill_dist_angle_bitmap
 
 T = TypeVar('T')
 power = 30
+ANGLE_RANGE = 180
+STEP = 12
 
 class Direction(enum.IntEnum):
     NORTH = 0
@@ -47,13 +50,13 @@ def get_next_direction(cur_pos, next_pos):
     cur_x, cur_y = cur_pos
     x, y = next_pos
     if y > cur_y and cur_x == x:
-        dir = Direction.NORTH
-    elif cur_x < x and cur_y == y:
-        dir = Direction.WEST
-    elif cur_x > x and cur_y == y:
         dir = Direction.EAST
-    elif cur_y > y and cur_x == x:
+    elif cur_x < x and cur_y == y:
+        dir = Direction.NORTH
+    elif cur_x > x and cur_y == y:
         dir = Direction.SOUTH
+    elif cur_y > y and cur_x == x:
+        dir = Direction.WEST
     return dir
 
 def dist_to_time(dist):
@@ -73,6 +76,7 @@ def dist_to_time(dist):
 def turn_90_right():
     for i in range(500):
         fc.turn_right(100)
+
 
 def turn_90_left():
     for i in range(500):
@@ -109,10 +113,12 @@ def main():
                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
+    #map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
+    print(map)
     new_map = np.full(np.shape(map), -1)
 
-    start = Point(10, 0)  # starting position
-    end = Point(10, 19)  # ending position
+    start = Point(0, 10)  # starting position
+    end = Point(19, 10)  # ending position
 
 
     # goal dest: 
@@ -148,11 +154,11 @@ def main():
         
         dir_diff = dir - car_direction
         print(dir, car_direction, dir_diff)
-        if dir_diff == -1 or dir_diff == 3:
+        if dir_diff % 4 == 3:
             turn_90_left()
             car_direction = dir 
             print("turned left")
-        elif dir_diff == 1 or dir_diff == -3:
+        elif dir_diff % 4 == 1:
             turn_90_right()
             car_direction = dir
             print("turned right")
