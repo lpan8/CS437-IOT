@@ -26,7 +26,7 @@ class Direction(enum.IntEnum):
 
 
 def path_to_dists(path):
-    
+
     cur = path[0]
     dir = Direction.NORTH
     dists = [] # [(6, N), (4, E)]
@@ -66,7 +66,7 @@ def dist_to_time(dist):
     x = 0
     while x <= (dist * 0.5):
         time.sleep(0.1)
-        cur_speed = speed() 
+        cur_speed = speed()
         x += cur_speed * 0.1
         #print("%smm/s"%cur_speed)
     print("%smm"%x)
@@ -88,10 +88,6 @@ def get_path(map, start, end):
     for point, cost in cost_so_far.items():
         new_map[point.y][point.x] = cost
 
-    # for point in came_from:
-    #     point.print()
-
-    
     path = []
     last_point = end
     print(last_point)
@@ -115,7 +111,7 @@ def main():
     #                  [0, 1, 0, 1, 1, 0],
     #                  [0, 1, 0, 1, 1, 0]])
 
-    
+
     # map = np.array([[0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
     #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
     #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
@@ -159,7 +155,7 @@ def main():
             print(dir, car_direction, dir_diff)
             if dir_diff % 4 == 3:
                 turn_90_left()
-                car_direction = dir 
+                car_direction = dir
                 print("turned left")
                 if car_direction == Direction.NORTH:
                     # rescan
@@ -179,6 +175,7 @@ def main():
                 print("turned right")
                 if car_direction == Direction.NORTH:
                     # rescan
+                    map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
                     print("facing north again")
                     end = Point(end.x - change_x, end.y - change_y)
                     cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
@@ -196,9 +193,9 @@ def main():
                 change_y -= dist
             print(change_x, change_y)
             dist_to_time(dist)
-    
-        
-    
+
+
+
 if __name__ == '__main__':
     try:
         main()
