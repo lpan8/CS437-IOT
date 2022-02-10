@@ -10,12 +10,17 @@ import sys
 import time
 from routing import Route
 import enum
+import cv2
+from object_detector import ObjectDetector
+from object_detector import ObjectDetectorOptions
+import utils
 from object_dist_mapping import meas_dist_fill_dist_angle_bitmap
 
 T = TypeVar('T')
 power = 30
 ANGLE_RANGE = 180
 STEP = 12
+count = 0
 
 class Direction(enum.IntEnum):
     NORTH = 0
@@ -60,11 +65,62 @@ def get_next_direction(cur_pos, next_pos):
     return dir
 
 def dist_to_time(dist):
+    global count
+    model = 'efficientdet_lite0.tflite'
+    camera_id = 0
+    num_threads = 4
+    enable_edgetpu = False
+    width = 640
+    height = 480
+
+
+    # Variables to calculate FPS
+    #counter, fps = 0, 0
+    start_time = time.time()
+
+    # Start capturing video input from the camera
+    cap = cv2.VideoCapture(camera_id)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+    cap.set(cv2.CAP_PROP_FPS, 1)
+
+    # Initialize the object detection model
+    options = ObjectDetectorOptions(
+        num_threads=num_threads,
+        score_threshold=0.3,
+        max_results=3,
+        enable_edgetpu=enable_edgetpu)
+    detector = ObjectDetector(model_path=model, options=options)
+
+    stop = False
+
     speed = fc.Speed(25)
     speed.start()
     fc.forward(power)
     x = 0
-    while x <= (dist * 0.6):
+    while x <= (dist * 0.4):
+        # Run object detection estimation using the model.
+        success, image = cap.read()
+        if not success:
+            sys.exit(
+                'ERROR: Unable to read from webcam. Please verify your webcam settings.'
+            )
+        image = cv2.flip(image, 1)
+        detections = detector.detect(image)
+        for detection in detections:
+            category = detection.categories[0]
+            class_name = category.label
+            print(class_name)
+            if class_name == 'stop sign':
+                stop = True
+
+        if stop == True and count < 1:
+            print("saw stop sign")
+            fc.stop()
+            time.sleep(2)
+            stop = False
+            count += 1
+            fc.forward(power)
         time.sleep(0.1)
         cur_speed = speed() 
         x += cur_speed * 0.1
@@ -72,25 +128,20 @@ def dist_to_time(dist):
     print("%smm"%x)
     speed.deinit()
     fc.stop()
+    # cap.release()
+    # cv2.destroyAllWindows()
 
 def turn_90_right():
-    fc.turn_right(100)
-    time.sleep(0.8)
+    fc.turn_right(80)
+    time.sleep(0.5)
 
 
 def turn_90_left():
-    fc.turn_left(100)
-    time.sleep(0.4)
+    fc.turn_left(80)
+    time.sleep(0.5)
 
 
 def main():
-
-    # # map = np.array([[0, 1, 1, 1, 1, 1],
-    # #                  [0, 0, 0, 0, 0, 0],
-    # #                  [0, 1, 1, 1, 0, 0],
-    # #                  [0, 1, 0, 1, 1, 0],
-    # #                  [0, 1, 0, 1, 1, 0]])
-
     
     # map = np.array([[0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
     #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
@@ -114,15 +165,18 @@ def main():
     #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
     map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
-    print(map)
+    #print(map)
     new_map = np.full(np.shape(map), -1)
 
     # start = Point(50 , 0)  # starting position
     # end = Point(50, 99)  # ending position
 
-    start = Point(0 , 50)  # starting position
-    end = Point(80, 50)  # ending position
+    # start = Point(0 , 150)  # starting position
+    # end = Point(180, 170)  # ending position
 
+
+    start = Point(0 , 65)  # starting position
+    end = Point(99, 75)  # ending position
 
     # goal dest: 
 
@@ -148,7 +202,7 @@ def main():
 
     path.reverse()
 
-    print(path)
+    #print(path)
     dir_dists = path_to_dists(path)
     print(dir_dists)
     car_direction = Direction.NORTH

@@ -69,18 +69,18 @@ def dist_to_time(dist):
         cur_speed = speed() 
         x += cur_speed * 0.1
         #print("%smm/s"%cur_speed)
-    print("%smm"%x)
+    #print("%smm"%x)
     speed.deinit()
     fc.stop()
 
 def turn_90_right():
     fc.turn_right(100)
-    time.sleep(0.8)
+    time.sleep(0.4)
 
 
 def turn_90_left():
     fc.turn_left(100)
-    time.sleep(0.4)
+    time.sleep(0.6)
 
 def get_path(map, start, end):
     new_map = np.full(np.shape(map), -1)
@@ -94,18 +94,22 @@ def get_path(map, start, end):
     
     path = []
     last_point = end
-    print(last_point)
-    print(last_point in came_from)
+    #print(last_point)
+    #print(last_point in came_from)
     path.append((last_point.x, last_point.y))
     while last_point is not None:
-        print(last_point)
+        #print(last_point)
         last_point = came_from[last_point]
         if last_point is not None:
             path.append((last_point.x, last_point.y))
     path.reverse()
     return path
 
-
+def is_within(p1, p2):
+    if abs(p1.x - p2.x) < 10 and abs(p1.y - p2.v) < 10:
+        return True
+    else:   
+        return False
 
 def main():
 
@@ -138,17 +142,20 @@ def main():
     #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
     map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
-    print(map)
+    #print(map)
 
-    start = Point(50, 0)  # starting position
-    end = Point(50, 99)  # ending position
+    start = Point(0, 100)  # starting position
+    end = Point(150, 110)  # ending position
+
+    # start = Point(50, 0)  # starting position
+    # end = Point(50, 99)  # ending position
 
     cur_pos = start
     change_x = 0
     change_y = 0
-    while not (cur_pos == end):
+    while not is_within(cur_pos, end):
         path = get_path(map, start, end)
-        print(path)
+        #print(path)
         dir_dists = path_to_dists(path)
         print(dir_dists)
         car_direction = Direction.NORTH
@@ -157,20 +164,24 @@ def main():
 
             dir_diff = dir - car_direction
             print(dir, car_direction, dir_diff)
+            print("cur pos: ", cur_pos)
+            print("dest: ", end)
             if dir_diff % 4 == 3:
                 turn_90_left()
                 car_direction = dir 
                 print("turned left")
                 if car_direction == Direction.NORTH:
                     # rescan
-                    print(map)
+                    #print(map)
+                    fc.stop()
                     map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
                     print("facing north again")
                     end = Point(end.x - change_x, end.y - change_y)
-                    cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
+                    cur_pos = start
+                    # cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
                     change_x, change_y = 0, 0
-                    print("cur pos: ", cur_pos)
-                    print("new dest: ", end)
+                   
+                   # print("new dest: ", end)
                     continue
 
             elif dir_diff % 4 == 1:
@@ -181,10 +192,10 @@ def main():
                     # rescan
                     print("facing north again")
                     end = Point(end.x - change_x, end.y - change_y)
-                    cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
+                    cur_pos = start
                     change_x, change_y = 0, 0
-                    print("cur pos: ", cur_pos)
-                    print("new dest: ", end)
+                   # print("cur pos: ", cur_pos)
+                    #print("new dest: ", end)
                     continue
             if dir == Direction.NORTH:
                 change_x += dist
@@ -195,6 +206,7 @@ def main():
             elif dir == Direction.WEST:
                 change_y -= dist
             print(change_x, change_y)
+            cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
             dist_to_time(dist)
     
         
