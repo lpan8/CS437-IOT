@@ -96,12 +96,22 @@ def dist_to_time(dist):
     global detector
 
     stop = False
+    object_detected = False
 
     speed = fc.Speed(25)
     speed.start()
     fc.forward(power)
     x = 0
     while x <= (dist * 0.4):
+        dist = us.get_distance()
+        print(dist)
+        if dist <= 10:
+            fc.stop()
+            fc.backward(50)
+            time.sleep(0.5)
+            object_detected = True
+            break
+            
         # Run object detection estimation using the model.
         success, image = cap.read()
         if not success:
@@ -131,6 +141,7 @@ def dist_to_time(dist):
     #print("%smm"%x)
     speed.deinit()
     fc.stop()
+    return object_detected, x
 
 def turn_90_right():
     fc.turn_right(100)
@@ -232,6 +243,10 @@ def main():
                    # print("cur pos: ", cur_pos)
                     #print("new dest: ", end)
                     continue
+                    
+            object_detected, travelled = dist_to_time(dist)
+            if (objected_detect):
+                dist = travelled / 10
             if dir == Direction.NORTH:
                 change_x += dist
             elif dir == Direction.EAST:
@@ -245,7 +260,13 @@ def main():
             total_x += change_x
             total_y += change_y
             change_x, change_y = 0, 0
-            dist_to_time(dist)
+            if (object_detected):
+                map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
+                end = Point(end.x - total_x, end.y - total_y)
+                cur_pos = start
+                total_x, total_y = 0, 0
+            
+            
     
         
     
