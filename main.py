@@ -106,10 +106,10 @@ def dist_to_time(dist):
     while x <= (dist * 0.4):
         dist = us.get_distance()
         print(dist)
-        if dist <= 10:
+        if dist <= 2:
             fc.stop()
-            fc.backward(50)
-            time.sleep(0.5)
+            #fc.backward(50)
+            #time.sleep(0.5)
             object_detected = True
             break
             
@@ -177,7 +177,7 @@ def get_path(map, start, end):
     return path
 
 def is_within_dest(p1, p2):
-    if abs(p1.x - p2.x) < 10 and abs(p1.y - p2.v) < 10:
+    if abs(p1.x - p2.x) < 10 and abs(p1.y - p2.y) < 10:
         return True
     else:   
         return False
