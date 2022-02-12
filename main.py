@@ -186,7 +186,7 @@ def main():
     change_y = 0
     total_x = 0
     total_y = 0
-    while not is_within(cur_pos, end):
+    while not is_within_dest(cur_pos, end):
         path = get_path(map, start, end)
         #print(path)
         dir_dists = path_to_dists(path)
