@@ -164,7 +164,7 @@ def get_path(map, start, end):
     path.reverse()
     return path
 
-def is_within(p1, p2):
+def is_within_dest(p1, p2):
     if abs(p1.x - p2.x) < 10 and abs(p1.y - p2.v) < 10:
         return True
     else:   
@@ -184,6 +184,8 @@ def main():
     cur_pos = start
     change_x = 0
     change_y = 0
+    total_x = 0
+    total_y = 0
     while not is_within(cur_pos, end):
         path = get_path(map, start, end)
         #print(path)
@@ -207,10 +209,10 @@ def main():
                     fc.stop()
                     map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
                     print("facing north again")
-                    end = Point(end.x - change_x, end.y - change_y)
+                    end = Point(end.x - total_x, end.y - total_y)
                     cur_pos = start
                     # cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
-                    change_x, change_y = 0, 0
+                    total_x, total_y = 0, 0
                    
                    # print("new dest: ", end)
                     continue
@@ -224,9 +226,9 @@ def main():
                     fc.stop()
                     print("facing north again")
                     map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
-                    end = Point(end.x - change_x, end.y - change_y)
+                    end = Point(end.x - total_x, end.y - total_y)
                     cur_pos = start
-                    change_x, change_y = 0, 0
+                    total_x, total_y = 0, 0
                    # print("cur pos: ", cur_pos)
                     #print("new dest: ", end)
                     continue
@@ -240,6 +242,9 @@ def main():
                 change_y -= dist
             print(change_x, change_y)
             cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
+            total_x += change_x
+            total_y += change_y
+            change_x, change_y = 0, 0
             dist_to_time(dist)
     
         
