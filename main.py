@@ -246,7 +246,9 @@ def main():
                 print("turned right")
                 if car_direction == Direction.NORTH:
                     # rescan
+                    fc.stop()
                     print("facing north again")
+                    map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
                     end = Point(end.x - change_x, end.y - change_y)
                     cur_pos = start
                     change_x, change_y = 0, 0
