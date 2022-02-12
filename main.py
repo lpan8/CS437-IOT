@@ -144,11 +144,13 @@ def dist_to_time(dist):
 def turn_90_right():
     fc.turn_right(100)
     time.sleep(0.8)
+    fc.stop()
 
 
 def turn_90_left():
     fc.turn_left(100)
     time.sleep(0.95)
+    fc.stop()
 
 def get_path(map, start, end):
     new_map = np.full(np.shape(map), -1)
