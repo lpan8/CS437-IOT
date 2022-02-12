@@ -246,7 +246,7 @@ def main():
                     continue
                     
             object_detected, travelled = dist_to_time(dist)
-            if (objected_detect):
+            if (object_detected):
                 dist = travelled / 10
             if dir == Direction.NORTH:
                 change_x += dist
