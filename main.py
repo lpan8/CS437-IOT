@@ -105,11 +105,8 @@ def dist_to_time(dist):
     us = fc.us
     while x <= (dist * 0.4):
         dist = us.get_distance()
-        print(dist)
         if dist <= 2:
             fc.stop()
-            #fc.backward(50)
-            #time.sleep(0.5)
             object_detected = True
             break
             
@@ -159,14 +156,9 @@ def get_path(map, start, end):
     for point, cost in cost_so_far.items():
         new_map[point.y][point.x] = cost
 
-    # for point in came_from:
-    #     point.print()
-
     
     path = []
     last_point = end
-    #print(last_point)
-    #print(last_point in came_from)
     path.append((last_point.x, last_point.y))
     while last_point is not None:
         #print(last_point)
@@ -217,16 +209,12 @@ def main():
                 print("turned left")
                 if car_direction == Direction.NORTH:
                     # rescan
-                    #print(map)
                     fc.stop()
                     map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
                     print("facing north again")
                     end = Point(end.x - total_x, end.y - total_y)
                     cur_pos = start
-                    # cur_pos = Point(cur_pos.x + change_x, cur_pos.y + change_y)
                     total_x, total_y = 0, 0
-                   
-                   # print("new dest: ", end)
                     continue
 
             elif dir_diff % 4 == 1:
@@ -241,8 +229,6 @@ def main():
                     end = Point(end.x - total_x, end.y - total_y)
                     cur_pos = start
                     total_x, total_y = 0, 0
-                   # print("cur pos: ", cur_pos)
-                    #print("new dest: ", end)
                     continue
                     
             object_detected, travelled = dist_to_time(dist)
@@ -276,4 +262,6 @@ if __name__ == '__main__':
         main()
     finally:
         fc.stop()
+        cap.release()
+        cv2.destroyAllWindows()
 # [(6, N), (4, E), (7, )]
