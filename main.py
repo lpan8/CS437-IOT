@@ -22,6 +22,32 @@ ANGLE_RANGE = 180
 STEP = 12
 count = 0
 
+model = 'efficientdet_lite0.tflite'
+camera_id = 0
+num_threads = 4
+enable_edgetpu = False
+width = 640
+height = 480
+
+
+# Variables to calculate FPS
+#counter, fps = 0, 0
+start_time = time.time()
+
+# Start capturing video input from the camera
+cap = cv2.VideoCapture(camera_id)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+cap.set(cv2.CAP_PROP_FPS, 1)
+
+# Initialize the object detection model
+options = ObjectDetectorOptions(
+    num_threads=num_threads,
+    score_threshold=0.3,
+    max_results=3,
+    enable_edgetpu=enable_edgetpu)
+detector = ObjectDetector(model_path=model, options=options)
+
 class Direction(enum.IntEnum):
     NORTH = 0
     EAST = 1
@@ -66,31 +92,8 @@ def get_next_direction(cur_pos, next_pos):
 
 def dist_to_time(dist):
     global count
-    model = 'efficientdet_lite0.tflite'
-    camera_id = 0
-    num_threads = 4
-    enable_edgetpu = False
-    width = 640
-    height = 480
-
-
-    # Variables to calculate FPS
-    #counter, fps = 0, 0
-    start_time = time.time()
-
-    # Start capturing video input from the camera
-    cap = cv2.VideoCapture(camera_id)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-    cap.set(cv2.CAP_PROP_FPS, 1)
-
-    # Initialize the object detection model
-    options = ObjectDetectorOptions(
-        num_threads=num_threads,
-        score_threshold=0.3,
-        max_results=3,
-        enable_edgetpu=enable_edgetpu)
-    detector = ObjectDetector(model_path=model, options=options)
+    global cap
+    global detector
 
     stop = False
 
@@ -169,42 +172,14 @@ def is_within(p1, p2):
 
 def main():
 
-    # map = np.array([[0, 1, 1, 1, 1, 1],
-    #                  [0, 0, 0, 0, 0, 0],
-    #                  [0, 1, 1, 1, 0, 0],
-    #                  [0, 1, 0, 1, 1, 0],
-    #                  [0, 1, 0, 1, 1, 0]])
-
-    
-    # map = np.array([[0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    #                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-
     map = meas_dist_fill_dist_angle_bitmap(int(ANGLE_RANGE/STEP))
     #print(map)
 
     start = Point(0, 100)  # starting position
     end = Point(150, 110)  # ending position
 
-    # start = Point(50, 0)  # starting position
-    # end = Point(50, 99)  # ending position
+    # start = Point(0, 100)  # starting position
+    # end = Point(140, 150)  # ending position
 
     cur_pos = start
     change_x = 0
