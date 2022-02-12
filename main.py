@@ -12,6 +12,10 @@ from routing import Route
 import enum
 from object_dist_mapping import meas_dist_fill_dist_angle_bitmap
 
+import cv2
+from object_detector import ObjectDetector
+from object_detector import ObjectDetectorOptions
+
 T = TypeVar('T')
 power = 30
 ANGLE_RANGE = 180
