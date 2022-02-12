@@ -16,6 +16,7 @@ T = TypeVar('T')
 power = 30
 ANGLE_RANGE = 180
 STEP = 12
+count = 0
 
 class Direction(enum.IntEnum):
     NORTH = 0
@@ -60,11 +61,62 @@ def get_next_direction(cur_pos, next_pos):
     return dir
 
 def dist_to_time(dist):
+    global count
+    model = 'efficientdet_lite0.tflite'
+    camera_id = 0
+    num_threads = 4
+    enable_edgetpu = False
+    width = 640
+    height = 480
+
+
+    # Variables to calculate FPS
+    #counter, fps = 0, 0
+    start_time = time.time()
+
+    # Start capturing video input from the camera
+    cap = cv2.VideoCapture(camera_id)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+    cap.set(cv2.CAP_PROP_FPS, 1)
+
+    # Initialize the object detection model
+    options = ObjectDetectorOptions(
+        num_threads=num_threads,
+        score_threshold=0.3,
+        max_results=3,
+        enable_edgetpu=enable_edgetpu)
+    detector = ObjectDetector(model_path=model, options=options)
+
+    stop = False
+
     speed = fc.Speed(25)
     speed.start()
     fc.forward(power)
     x = 0
-    while x <= (dist * 0.5):
+    while x <= (dist * 0.4):
+        # Run object detection estimation using the model.
+        success, image = cap.read()
+        if not success:
+            sys.exit(
+                'ERROR: Unable to read from webcam. Please verify your webcam settings.'
+            )
+        image = cv2.flip(image, 1)
+        detections = detector.detect(image)
+        for detection in detections:
+            category = detection.categories[0]
+            class_name = category.label
+            print(class_name)
+            if class_name == 'stop sign':
+                stop = True
+
+        if stop == True and count < 1:
+            print("saw stop sign")
+            fc.stop()
+            time.sleep(2)
+            stop = False
+            count += 1
+            fc.forward(power)
         time.sleep(0.1)
         cur_speed = speed() 
         x += cur_speed * 0.1
