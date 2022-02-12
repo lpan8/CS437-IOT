@@ -102,6 +102,7 @@ def dist_to_time(dist):
     speed.start()
     fc.forward(power)
     x = 0
+    us = fc.us
     while x <= (dist * 0.4):
         dist = us.get_distance()
         print(dist)
