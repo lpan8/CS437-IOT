@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0" >
+    <style>
+      .container{
+                  display: grid;
+                }
+      
+      .container1 {margin:30%; width: 75%;}
+      .container2 {margin:2%; width: 98%;}
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="./index.js"></script>
+    
+  </head>
+
+  <body>
+    <div class="container">
+  
+      <div class="jumbotron">
+      <h2>CS498: IoT -- Lab 2</h2>
+
+      <!-- <video class="center" width="600" height="400" controls>
+        <source src="samplevid.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+      </video> -->
+      <img src="./media/default_background.png" id='pics'>
+    </div> 
+  
+  </div>
+
+  <div class="row">
+    <div class="container1">
+        <div class="jumbotron text-center col-md-6">
+            <span>&nbsp;&nbsp;</span> 
+            <span id="upArrow" style='font-size:120px; color:yellowgreen;'>&#8679;</span>
+            <br>
+            <span id="leftArrow" style='font-size:120px; color:yellowgreen;'>&#8678;</span>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> 
+            <span id="rightArrow" style='font-size:120px; color:yellowgreen;'>&#8680;</span>
+            <br>
+            <span>&nbsp;&nbsp;</span> 
+            <span id="downArrow" style='font-size:120px; color:yellowgreen;'>&#8681;</span>
+        </div>
+      </div>   
+  </div>
+  
+  <div class="row">
+    <div class="container2">
+        
+        <div class="jumbotron text-left col-md-6">
+          <button class="btn btn-success" onclick="update_data()">Get Dynamic Data from Respberry Pi</button>
+            <p>
+            <span id="power_dot" style="color:Green">&bull;</span> Power Usage: <span id="power"> </span>
+             <br>
+             <span id="cpu_usage_dot" style="color:Green">&bull;</span> CPU Usage: <span id="cpu_usage"> </span>
+             <br>
+             <span id="cpu_temprature_dot" style="color:green">&bull;</span> CPU Temperature: <span id="cpu_temperature"> </span>
+             <br>
+             <span id="gpu_temprature_dot" style="color:green">&bull;</span> GPU Temperature: <span id="gpu_temperature"> </span>
+             <br>
+             <span id="disk_space_dot" style="color:green">&bull;</span> Disk Space: <span id="disk_space"> </span>
+             <br>
+             <span id="ram_info_dot" style="color:green">&bull;</span> RAM Info: <span id="ram_info"> </span>
+             <br>
+            </p>  
+          </div>
+  
+          <div class="jumbotron text-left col-md-6">
+            <button class="btn btn-success" onclick="update_data()"> Static Data from Raspberry Pi</button>
+              <p>
+               <span id="IP_PI_dot" style="color:green">&bull;</span> IP Address: <span id="ip_pi"> </span>
+               <br>
+              </p>  
+            </div>
+    </div>
+</div>
+
+  </body>
+</html>
+
